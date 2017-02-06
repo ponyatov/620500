@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <vector>
 #include <map>
+#include <cmath>
+#include <cassert>
 using namespace std;
 
 struct Sym {					// universal symbolic type (AST node)
@@ -18,17 +20,56 @@ struct Sym {					// universal symbolic type (AST node)
 	vector<Sym*> nest;			// \ nested tree elements
 	void push(Sym*);			// / push nest[]ed element
 	map<string,Sym*> attr;		// attributes
+	Sym* operator%(Sym*);		// /
 	string dump(int depth=0);	// \ dump data item in tree form
 	virtual string head();		//   <T:V> representation string
 	string pad(int);			// /
+	virtual Sym* eval(Sym*);	// evaluate/execute/interpret tree
+	virtual Sym* pfxadd();		// + A
+	virtual Sym* pfxsub();		// - A
+	virtual Sym* add(Sym*);		// A + B
+	virtual Sym* sub(Sym*);		// A - B
+	virtual Sym* mul(Sym*);		// A * B
+	virtual Sym* div(Sym*);		// A / B
+	virtual Sym* pow(Sym*);		// A ^ B
+	virtual Sym* at(Sym*);		// A @ B apply
 };
 
-struct Num:Sym { Num(string);	// number
-	float val;					// redef value as machine float
-	string head(); };			// redef header for float:val
+struct Env:Sym { Env(string); };// environment
+extern Env glob;				// global environment
+extern void glob_init();		// initialize glob.env
 
-struct Op:Sym { Op(string); };	// operator
-struct Fn:Sym { Fn(string); };	// (internal) function
+struct Error:Sym { Error(string); };// error object
+
+struct Str:Sym { Str(string);	// string
+	string head(); };
+
+struct Num:Sym { Num(string);	// number
+	Num(double);				// float constructor
+	double val;					// redef value as machine float
+	string head(); 				// redef header for float:val
+	Sym* pfxadd();				// redef: + num:A
+	Sym* pfxsub();				// redef: - num:A
+	Sym* add(Sym*);				// redef: num:A + B
+	Sym* sub(Sym*);				// redef: num:A - B
+	Sym* mul(Sym*);				// redef: num:A * B
+	Sym* div(Sym*);				// redef: num:A / B
+	Sym* pow(Sym*);				// redef: num:A ^ B
+};
+
+struct Op:Sym { Op(string);		// operator
+	Sym* eval(Sym*);			// required for expressions evaluate
+	};
+
+typedef Sym* (*FN)(Sym*);		// (internal) function
+struct Fn:Sym { Fn(string,FN);
+	FN fn;						// pointer to internal in-compiled function
+	Sym* at(Sym*);				// must be redefined as *fn(Sym*) call
+								// predefined core functions:
+	static Sym* sin(Sym*);		// \ trigonometry
+	static Sym* cos(Sym*);		// /
+	static Sym* date(Sym*);		// date&time
+};
 
 extern int yylex();				// \ lexer interface
 extern int yylineno;			// line number

@@ -19,6 +19,10 @@
 
 %%
 REPL: | REPL ex 		{ cout << $2->dump() << endl;
+						  cout << "---------------------\n";
+						  cout << $2->eval(&glob)->dump() << endl;
+						  cout << "---------------------\n";
+						  cout << glob.dump() << endl;
 						  cout << "====================================\n"; } ;
 ex	: scalar
 	| SYM LP ex RP		{ $$=new Op("@");	/* op:@ apply */
