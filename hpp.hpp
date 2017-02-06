@@ -2,12 +2,14 @@
 #define _H_HPP
 
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <vector>
 #include <map>
 using namespace std;
 
 struct Sym {					// universal symbolic type (AST node)
+								// _ MUST be virtual for algebraic class tree _
 	string tag;					// T: type/class marker
 	string val;					// V: data item value (string: universal repr)
 	Sym(string T,string V);		// <T:V> pair constructor
@@ -15,17 +17,21 @@ struct Sym {					// universal symbolic type (AST node)
 	vector<Sym*> nest;			// \ nested tree elements
 	void push(Sym*);			// / push nest[]ed element
 	string dump(int depth=0);	// \ dump data item in tree form
-	string head();
+	virtual string head();		//   <T:V> representation string
 	string pad(int);			// /
 };
 
-struct Op:Sym {
-};
+struct Num:Sym { Num(string);	// number
+	float val;					// redef value as machine float
+	string head(); };			// redef header for float:val
+
+struct Op:Sym { Op(string); };	// operator
+struct Fn:Sym { Fn(string); };	// (internal) function
 
 extern int yylex();				// \ lexer interface
 extern int yylineno;			// line number
 extern char* yytext;			// / selected lexeme pointer
-#define TOC(C,X) { yylval.o = new Sym(yytext); return X; } /* token */
+#define TOC(C,X) { yylval.o = new C(yytext); return X; } /* token */
 extern int yyparse();			// \ syntax parser interface
 extern void yyerror(string);
 #include "ypp.tab.hpp"			// /

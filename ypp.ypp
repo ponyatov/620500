@@ -8,8 +8,29 @@
 %token <o> ADD SUB MUL DIV POW	/* arith.operators	*/
 %token <o> EQ					/* operators		*/
 
-%type <o> ex
+%type <o> ex scalar				/* expression scalar */
+
+								/* operator precedence */
+%right	EQ
+%left	ADD SUB
+%left	MUL DIV
+%left	POW
+%right	PFX
+
 %%
-REPL : | REPL ex { cout << $2->dump() << endl; } ;
-ex : scalar | LP | RP |ADD |SUB |MUL |DIV |POW |EQ ;
+REPL: | REPL ex 		{ cout << $2->dump() << endl; } ;
+ex	: scalar
+	| SYM LP ex RP		{ $$=new Op("@");	/* op:@ apply */
+						  $$->push($1);		/* function */
+						  $$->push($3);		/* to expression */ }
+	| LP ex RP			{ $$=$2; }
+	| ADD ex %prec PFX	{ $$=$1; $$->push($2); }
+	| SUB ex %prec PFX	{ $$=$1; $$->push($2); }
+	| ex EQ ex			{ $$=$2; $$->push($1); $$->push($3); }
+	| ex ADD ex			{ $$=$2; $$->push($1); $$->push($3); }
+	| ex SUB ex			{ $$=$2; $$->push($1); $$->push($3); }
+	| ex MUL ex			{ $$=$2; $$->push($1); $$->push($3); }
+	| ex DIV ex			{ $$=$2; $$->push($1); $$->push($3); }
+	| ex POW ex			{ $$=$2; $$->push($1); $$->push($3); }
+;
 scalar : SYM | NUM | STR ;
