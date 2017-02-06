@@ -1,5 +1,5 @@
 # 620500
-### simple flex/bison calculator
+### simple flex/bison/c(++) calculator [interpreter sample]
 
 simple calculator written in flex/bison/C(++) as generic answer on
 StackOverflow questions:
