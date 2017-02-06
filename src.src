@@ -1,5 +1,5 @@
 # comment
-A= -01++02.30*4e-5^(6.7E8/9)	# expression & var
+A= -01++02.30*4e-5^(6.7E-8/9)	# expression & var
 sin(x)/cos(pi)					# std.functions & const
 .end							# .end directive
 all text here will be ignored
