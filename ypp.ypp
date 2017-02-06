@@ -1,0 +1,15 @@
+%{
+#include "hpp.hpp"
+%}
+%defines %union { Sym*o; }
+
+%token <o> SYM NUM STR			/* scalars			*/
+%token <o> LP RP				/* brackets			*/
+%token <o> ADD SUB MUL DIV POW	/* arith.operators	*/
+%token <o> EQ					/* operators		*/
+
+%type <o> ex
+%%
+REPL : | REPL ex { cout << $2->dump() << endl; } ;
+ex : scalar | LP | RP |ADD |SUB |MUL |DIV |POW |EQ ;
+scalar : SYM | NUM | STR ;

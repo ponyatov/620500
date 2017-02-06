@@ -1,0 +1,20 @@
+%{
+#include "hpp.hpp"
+%}
+%option noyywrap yylineno
+%%
+#[^\n]*			{}						/* drop comments */
+
+\(				TOC(Op,LP)				/* parens */
+\)				TOC(Op,RP)
+
+\+				TOC(Op,ADD)				/* arith.operators */
+\-				TOC(Op,SUB)
+\*				TOC(Op,MUL)
+\/				TOC(Op,DIV)
+\^				TOC(Op,POW)
+
+[a-zA-Z0-9_.]+	TOC(Sym,SYM)			/* symbol */
+
+[ \t\r\n]+		{}						/* drop spaces */
+.				{yyerror("lexer");}		/* undetected lexeme char */
