@@ -2,6 +2,7 @@
 #define _H_HPP
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <cstdlib>
 #include <vector>
@@ -32,6 +33,12 @@ extern int yylex();				// \ lexer interface
 extern int yylineno;			// line number
 extern char* yytext;			// / selected lexeme pointer
 #define TOC(C,X) { yylval.o = new C(yytext); return X; } /* token */
+
+typedef struct yy_buffer_state * YY_BUFFER_STATE;		// \ lexer from string
+extern YY_BUFFER_STATE yy_scan_buffer(char *, size_t);
+extern YY_BUFFER_STATE yy_scan_string(const char *str);
+extern void yy_delete_buffer(YY_BUFFER_STATE buffer);	// /
+
 extern int yyparse();			// \ syntax parser interface
 extern void yyerror(string);
 #include "ypp.tab.hpp"			// /

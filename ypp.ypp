@@ -18,7 +18,8 @@
 %right	PFX
 
 %%
-REPL: | REPL ex 		{ cout << $2->dump() << endl; } ;
+REPL: | REPL ex 		{ cout << $2->dump() << endl;
+						  cout << "====================================\n"; } ;
 ex	: scalar
 	| SYM LP ex RP		{ $$=new Op("@");	/* op:@ apply */
 						  $$->push($1);		/* function */
