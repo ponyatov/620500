@@ -24,8 +24,12 @@ string Sym::head() { ostringstream os;
 	return os.str(); }
 string Sym::pad(int n) { string S; for (int i=0;i<n;i++) S+='\t'; return S; }
 string Sym::dump(int depth) { string S = "\n" + pad(depth) + head();
-	for (auto it=nest.begin(),e=nest.end();it!=e;it++) // recurse over tree
-		S += (*it)->dump(depth+1);
+	for (auto it=attr.begin(),e=attr.end();it!=e;it++) { // attr{}ibutes
+		S += "\n"+pad(depth+1) + it->first + " =";
+		S += it->second->dump(depth+2);
+	}
+	for (auto it=nest.begin(),e=nest.end();it!=e;it++) // nest[]ed elements
+		S += (*it)->dump(depth+1); // recurse over tree
 	return S; }
 
 Op::Op(string V):Sym("op",V){}

@@ -17,6 +17,7 @@ struct Sym {					// universal symbolic type (AST node)
 	Sym(string V);				// lexer token constructor
 	vector<Sym*> nest;			// \ nested tree elements
 	void push(Sym*);			// / push nest[]ed element
+	map<string,Sym*> attr;		// attributes
 	string dump(int depth=0);	// \ dump data item in tree form
 	virtual string head();		//   <T:V> representation string
 	string pad(int);			// /
